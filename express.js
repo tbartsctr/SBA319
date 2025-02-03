@@ -51,13 +51,21 @@ mongoose.connect(uri)
         }
   });
 
-  app.patch("/Games", async (req, res) => {
+  app.patch("/Games/:id", async (req, res) => {
         const {id} = req.params;
-        const {title, genre, releaseYear, platform, rating} = req.body;
+        //const {title, genre, releaseYear, platform, rating} = req.body;
+
+        const updateFields = {};
+
+        if (title) updateFields.title = title;
+        if (genre) updateFields.genre = genre;
+        if (releaseYear) updateFields.releaseYear = releaseYear;
+        if (platform) updateFields.platform = platform;
+        if (rating) updateFields.rating = rating;
 
         try{
-            const updateGame = Game.findByIdAndUpdate(id,
-                {title, genre, releaseYear, platform, rating},
+            const updateGame = await Game.findByIdAndUpdate(id, updateFields,
+        
                 {new: true}
             );
 
@@ -74,7 +82,7 @@ mongoose.connect(uri)
     
   });
 
-  app.delete("/Games", async (req, res) => {
+  app.delete("/Games/:id", async (req, res) => {
         const {id} = req.params;
 
        try{
@@ -92,4 +100,22 @@ mongoose.connect(uri)
     }
 
   });
+
+
+  app.post('/test/invalid-game', async (req, res) => {
+    try {
+        
+        const invalidGame = new Game({
+            genre: "RPG",        
+            releaseYear: 2020,
+            platform: ["PS5"],
+            rating: 11           
+        });
+
+        await invalidGame.save();
+        res.status(201).json(invalidGame);  
+    } catch (err) {
+        res.status(400).json({ error: "Invalid game data", message: err.message });
+    }
+});
 
