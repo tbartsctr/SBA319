@@ -37,7 +37,13 @@ mongoose.connect(uri)
 
   app.get("/Games", async (req, res) => {
         try{
-            const games = await Game.find();
+            const games = await Game.find({
+                title: title,
+                genre: genre,
+                releaseYear: releaseYear,
+                rating: rating,
+                platform: platform
+            });
             res.status(200).json(games);
         
         } catch(err){
