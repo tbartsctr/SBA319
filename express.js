@@ -51,3 +51,45 @@ mongoose.connect(uri)
         }
   });
 
+  app.patch("/Games", async (req, res) => {
+        const {id} = req.params;
+        const {title, genre, releaseYear, platform, rating} = req.body;
+
+        try{
+            const updateGame = Game.findByIdAndUpdate(id,
+                {title, genre, releaseYear, platform, rating},
+                {new: true}
+            );
+
+            if(!updateGame) {
+                return res.status(404).json({error: "Game not found"})
+            }
+
+            res.status(200).json(updateGame);
+
+        } catch (err) {
+            res.status(400).json("Game not updated");
+
+        }
+    
+  });
+
+  app.delete("/Games", async (req, res) => {
+        const {id} = req.params;
+
+       try{
+
+        const deleteGame = await Game.findByIdAndDelete(id);
+
+        if(!deleteGame) {
+            return res.status(404).json({error: "Game could not be deleted"})
+        }
+            res.status(200).json("Game successfully deleted!", deleteGame)
+    
+            } catch  (err) {
+                res.status(400).json("Game not deleted");
+
+    }
+
+  });
+
